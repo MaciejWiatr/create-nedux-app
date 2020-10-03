@@ -1,26 +1,30 @@
 {
-  "name": "create-nedux-app",
-  "version": "1.0.1",
-  "description": "script to create next app with redux toolkit out of the box",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "make:next": "npx create-next-app"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MaciejWiatr/create-nedux-app.git"
-  },
-  "author": "Maciej Wiatr",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/MaciejWiatr/create-next-redux-app/issues"
-  },
-  "homepage": "https://github.com/MaciejWiatr/create-next-redux-app#readme",
-  "bin": {
-    "create-nedux-app": "./index.js"
-  },
-  "dependencies": {
-    "cli-spinner": "^0.2.10"
-  }
+    "name": "create-nedux-app",
+    "version": "1.0.3",
+    "description": "script to create next app with redux toolkit out of the box",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc ./index.ts",
+        "dev": "tsc ./index.ts -w"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MaciejWiatr/create-nedux-app.git"
+    },
+    "author": "Maciej Wiatr",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/MaciejWiatr/create-next-redux-app/issues"
+    },
+    "homepage": "https://github.com/MaciejWiatr/create-next-redux-app#readme",
+    "bin": {
+        "create-nedux-app": "./index.js"
+    },
+    "devDependencies": {
+        "typescript": "^4.0.3"
+    },
+    "dependencies": {
+        "@types/node": "^14.11.2"
+    }
 }
