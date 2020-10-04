@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,12 +36,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
+exports.__esModule = true;
+var process_1 = require("process");
 var exec = require("child_process").exec;
 var path = require("path");
 var fs = require("fs");
-var cliPath = process.cwd();
+var ora = require("ora");
+var figlet = require("figlet");
 var projectName = process.argv[2];
+if (!projectName || projectName === ".") {
+    console.log("\x1b[31m", "You have to specify project's name!");
+    process_1.exit(69);
+}
+var cliPath = process.cwd();
 var projectPath = path.join(process.cwd(), projectName);
 var srcPath = path.join(projectPath, "/src/");
 var featuresPath = path.join(srcPath, "/features");
@@ -51,7 +59,6 @@ var reduxPagesPath = path.join(projectPath, "/pages/redux");
 var filesPath = path.join(__dirname, "/files/");
 var componentsPath = path.join(projectPath, "/components/");
 var componentsCounterPath = path.join(projectPath, "/components/Counter/");
-var ora = require("ora");
 function execPromise(command) {
     return new Promise(function (resolve, reject) {
         exec(command, function (error, stdout, stderr) {
@@ -65,7 +72,7 @@ function execPromise(command) {
 }
 var sh = function (command, printOutput) {
     if (printOutput === void 0) { printOutput = false; }
-    return __awaiter(_this, void 0, void 0, function () {
+    return __awaiter(void 0, void 0, void 0, function () {
         var err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -78,7 +85,7 @@ var sh = function (command, printOutput) {
                 case 2:
                     err_1 = _a.sent();
                     if (printOutput) {
-                        console.log(err_1);
+                        console.log("\x1b[31m", err_1);
                     }
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
@@ -86,23 +93,22 @@ var sh = function (command, printOutput) {
         });
     });
 };
-var makeDirs = function (dirs) { return __awaiter(_this, void 0, void 0, function () {
-    var _this = this;
+var makeDirs = function (dirs) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        dirs.forEach(function (dir) { return __awaiter(_this, void 0, void 0, function () {
+        dirs.forEach(function (dir) { return __awaiter(void 0, void 0, void 0, function () {
             var err_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, fs.promises.mkdir(dir)];
+                        return [4 /*yield*/, fs.promises.mkdir(dir, { recursive: true })];
                     case 1:
                         _a.sent();
                         console.log("created dir " + dir);
                         return [3 /*break*/, 3];
                     case 2:
                         err_2 = _a.sent();
-                        console.log("Dir " + dir + " was already existing, skipping");
+                        console.log("\x1b[33m", "Dir " + dir + " was already existing, skipping");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
@@ -127,7 +133,7 @@ function cp(source, target) {
                             wr.on("error", reject);
                             wr.on("finish", resolve);
                             rd.pipe(wr);
-                            console.log("Copied " + source + " \n");
+                            console.log("\x1b[32m", "Copied " + source + " \n");
                         })];
                 case 2: return [2 /*return*/, _a.sent()];
                 case 3:
@@ -141,7 +147,7 @@ function cp(source, target) {
     });
 }
 var getFilePath = function (filename) { return path.join(filesPath, filename); };
-var editPackageName = function () { return __awaiter(_this, void 0, void 0, function () {
+var editPackageName = function () { return __awaiter(void 0, void 0, void 0, function () {
     var packageFile, file;
     return __generator(this, function (_a) {
         packageFile = path.join(projectPath, "package.json");
@@ -150,12 +156,12 @@ var editPackageName = function () { return __awaiter(_this, void 0, void 0, func
         fs.writeFile(packageFile, JSON.stringify(file), function writeJSON(err) {
             if (err)
                 return console.log(err);
-            console.log("writing to " + packageFile + "\n");
+            console.log("\x1b[36m", "Saving new package.json to " + packageFile + "\n");
         });
         return [2 /*return*/];
     });
 }); };
-var copyFiles = function () { return __awaiter(_this, void 0, void 0, function () {
+var copyFiles = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, cp(getFilePath("store.js"), path.join(appPath, "store.js"))];
@@ -187,13 +193,12 @@ var copyFiles = function () { return __awaiter(_this, void 0, void 0, function (
         }
     });
 }); };
-// console.log(process.argv[1]);
-var spinner = ora("Creating new next app").start();
-sh("npx create-next-app " + projectName).then(function () { return __awaiter(_this, void 0, void 0, function () {
+var summary = "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nYour app was successfully created in " + projectPath + "\n\nYou can start using your app by typing these commands:\n\ncd " + projectName + "\n\nnpm run dev\n\n--or--\n\nyarn dev\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+var spinner = ora("Creating new next app\n").start();
+sh("npx create-next-app " + projectName).then(function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                spinner.text = "Created new nextjs app in " + projectPath;
                 spinner.text = "Creating app structure";
                 return [4 /*yield*/, makeDirs([
                         srcPath,
@@ -204,16 +209,31 @@ sh("npx create-next-app " + projectName).then(function () { return __awaiter(_th
                         featuresCounterPath,
                     ]).then(function () {
                         spinner.text = "Copying files...";
-                        copyFiles().then(function () {
+                        copyFiles()
+                            .then(function () {
                             spinner.color = "green";
                             spinner.text = "Running npm install...";
                             process.chdir(projectPath);
                             sh("npm install")
-                                .then(function (err) {
+                                .then(function () {
                                 spinner.stop();
+                                console.clear();
+                                figlet("Hurray!!", function (err, data) {
+                                    if (err) {
+                                        console.log("Something went wrong...");
+                                        console.dir(err);
+                                        return;
+                                    }
+                                    console.log(data);
+                                    console.log(summary);
+                                });
                             })["catch"](function (err) {
-                                console.log("An error ocured " + err);
+                                console.log("\x1b[31m", "An error has ocurred when using npm install:\n " + err);
+                                process_1.exit(1);
                             });
+                        })["catch"](function (err) {
+                            console.log("\x1b[31m", "An error has ocurred when copying files:\n " + err);
+                            process_1.exit(1);
                         });
                     })];
             case 1:
