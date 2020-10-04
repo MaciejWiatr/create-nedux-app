@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const { exec } = require("child_process");
 const path = require("path");
-const fs = require("fs-extra");
+const fs = require("fs");
 const cliPath = process.cwd();
 const projectName = process.argv[2];
 const projectPath = path.join(process.cwd(), projectName);
@@ -11,7 +11,7 @@ const featuresCounterPath = path.join(srcPath, "/features/counter/");
 const appPath = path.join(srcPath, "/app/");
 const pagesPath = path.join(projectPath, "/pages/");
 const reduxPagesPath = path.join(projectPath, "/pages/redux");
-const filesPath = path.join(cliPath, "/files/");
+const filesPath = path.join(__dirname, "/files/");
 const componentsPath = path.join(projectPath, "/components/");
 const componentsCounterPath = path.join(projectPath, "/components/Counter/");
 const ora = require("ora");
@@ -41,14 +41,12 @@ const sh = async (command: string, printOutput = false) => {
 
 const makeDirs = async (dirs: string[]) => {
     dirs.forEach(async (dir) => {
-        fs.ensureDir(dir)
-            .then(async () => {
-                console.log(`Created directory ${dir} \n`);
-                await fs.promises.mkdir(dir);
-            })
-            .catch((err: Error) => {
-                console.log(`Directory ${dir} already exists, skipping... \n`);
-            });
+        try {
+            await fs.promises.mkdir(dir);
+            console.log("created dir " + dir);
+        } catch (err) {
+            console.log(`Dir ${dir} was already existing, skipping`);
+        }
     });
 };
 
@@ -113,30 +111,32 @@ const copyFiles = async () => {
     await editPackageName();
 };
 
+// console.log(process.argv[1]);
+
 const spinner = ora("Creating new next app").start();
-sh(`npx create-next-app ${projectName}`)
-    .then(() => {
-        spinner.text = `Created new nextjs app in ${projectPath}`;
-        spinner.text = `Creating app structure`;
-        makeDirs([
-            srcPath,
-            componentsPath,
-            componentsCounterPath,
-            featuresPath,
-            featuresCounterPath,
-            appPath,
-        ]).then(() => {
-            spinner.text = "Copying files...";
-            copyFiles().then(() => {
-                spinner.color = "green";
-                spinner.text = "Running npm install...";
-                process.chdir(projectPath);
-                sh(`npm install`).then((err) => {
+sh(`npx create-next-app ${projectName}`).then(async () => {
+    spinner.text = `Created new nextjs app in ${projectPath}`;
+    spinner.text = `Creating app structure`;
+    await makeDirs([
+        srcPath,
+        componentsPath,
+        featuresPath,
+        appPath,
+        componentsCounterPath,
+        featuresCounterPath,
+    ]).then(() => {
+        spinner.text = "Copying files...";
+        copyFiles().then(() => {
+            spinner.color = "green";
+            spinner.text = "Running npm install...";
+            process.chdir(projectPath);
+            sh(`npm install`)
+                .then((err) => {
                     spinner.stop();
+                })
+                .catch((err) => {
+                    console.log(`An error ocured ${err}`);
                 });
-            });
         });
-    })
-    .catch((err) => {
-        console.log(`An error ocured ${err}`);
     });
+});

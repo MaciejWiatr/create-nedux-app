@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var _this = this;
 var exec = require("child_process").exec;
 var path = require("path");
-var fs = require("fs-extra");
+var fs = require("fs");
 var cliPath = process.cwd();
 var projectName = process.argv[2];
 var projectPath = path.join(process.cwd(), projectName);
@@ -48,7 +48,7 @@ var featuresCounterPath = path.join(srcPath, "/features/counter/");
 var appPath = path.join(srcPath, "/app/");
 var pagesPath = path.join(projectPath, "/pages/");
 var reduxPagesPath = path.join(projectPath, "/pages/redux");
-var filesPath = path.join(cliPath, "/files/");
+var filesPath = path.join(__dirname, "/files/");
 var componentsPath = path.join(projectPath, "/components/");
 var componentsCounterPath = path.join(projectPath, "/components/Counter/");
 var ora = require("ora");
@@ -90,24 +90,22 @@ var makeDirs = function (dirs) { return __awaiter(_this, void 0, void 0, functio
     var _this = this;
     return __generator(this, function (_a) {
         dirs.forEach(function (dir) { return __awaiter(_this, void 0, void 0, function () {
-            var _this = this;
+            var err_2;
             return __generator(this, function (_a) {
-                fs.ensureDir(dir)
-                    .then(function () { return __awaiter(_this, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                console.log("Created directory " + dir + " \n");
-                                return [4 /*yield*/, fs.promises.mkdir(dir)];
-                            case 1:
-                                _a.sent();
-                                return [2 /*return*/];
-                        }
-                    });
-                }); })["catch"](function (err) {
-                    console.log("Directory " + dir + " already exists, skipping... \n");
-                });
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, fs.promises.mkdir(dir)];
+                    case 1:
+                        _a.sent();
+                        console.log("created dir " + dir);
+                        return [3 /*break*/, 3];
+                    case 2:
+                        err_2 = _a.sent();
+                        console.log("Dir " + dir + " was already existing, skipping");
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
             });
         }); });
         return [2 /*return*/];
@@ -189,29 +187,38 @@ var copyFiles = function () { return __awaiter(_this, void 0, void 0, function (
         }
     });
 }); };
+// console.log(process.argv[1]);
 var spinner = ora("Creating new next app").start();
-sh("npx create-next-app " + projectName)
-    .then(function () {
-    spinner.text = "Created new nextjs app in " + projectPath;
-    spinner.text = "Creating app structure";
-    makeDirs([
-        srcPath,
-        componentsPath,
-        componentsCounterPath,
-        featuresPath,
-        featuresCounterPath,
-        appPath,
-    ]).then(function () {
-        spinner.text = "Copying files...";
-        copyFiles().then(function () {
-            spinner.color = "green";
-            spinner.text = "Running npm install...";
-            process.chdir(projectPath);
-            sh("npm install").then(function (err) {
-                spinner.stop();
-            });
-        });
+sh("npx create-next-app " + projectName).then(function () { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                spinner.text = "Created new nextjs app in " + projectPath;
+                spinner.text = "Creating app structure";
+                return [4 /*yield*/, makeDirs([
+                        srcPath,
+                        componentsPath,
+                        featuresPath,
+                        appPath,
+                        componentsCounterPath,
+                        featuresCounterPath,
+                    ]).then(function () {
+                        spinner.text = "Copying files...";
+                        copyFiles().then(function () {
+                            spinner.color = "green";
+                            spinner.text = "Running npm install...";
+                            process.chdir(projectPath);
+                            sh("npm install")
+                                .then(function (err) {
+                                spinner.stop();
+                            })["catch"](function (err) {
+                                console.log("An error ocured " + err);
+                            });
+                        });
+                    })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
     });
-})["catch"](function (err) {
-    console.log("An error ocured " + err);
-});
+}); });
