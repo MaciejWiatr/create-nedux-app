@@ -1,6 +1,6 @@
 {
     "name": "create-nedux-app",
-    "version": "1.0.9",
+    "version": "1.1.0",
     "description": "script to create next app with redux toolkit out of the box",
     "main": "index.js",
     "scripts": {
